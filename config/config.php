@@ -1,10 +1,8 @@
 <?php
 session_start();
 
-require_once(__DIR__ . '/../functions/activity.php');
-require_once(__DIR__ . '/../functions/auth.php');
-require_once(__DIR__. '/../functions/redirect.php');
-define('BASE_URL', 'http://localhost/IT34B-1');
+require_once(__DIR__ . '/../includes/activity-logger.php');
+define('BASE_URL', 'http://localhost/IT34B');
 
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'libr_it34b');
