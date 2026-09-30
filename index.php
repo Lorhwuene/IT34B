@@ -38,51 +38,47 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 'success'
             );
 
-            header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
-            exit;
+            echo 'Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php';
+        header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
+        exit;
+       } elseif($result=== 'active_session') {
+        echo 'This account is currently logged in on another device';
 
-        } elseif ($result === 'active_session'){
+        $error = 'This account is currently logged in on another device';
+       } else {
 
-            $error = 'This account is already logged in on another device';
-
-        } else {
-
-            $error = 'Invalid Login Credentials';
+       $error = 'Invalid login credentials';
         }
     }
 }
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Document</title>
 </head>
+
 <body>
 
-<form method="POST">
-    <label>Username or Email</label>
-    <input type="text" name="login" required>
-    <br>
-    <br>
-    <label>Password</label>
-    <input type="password" name="password"required>
-    <br>
-    <button type="submit">Sign In</button>
-</form>
 
-<?php if ($error !== ''): ?>
-    <p>
-        <?= htmlspecialchars($error) ?>
-    </p>
-<?php endif; ?>
+    <form method="POST">
+        <label>Username or Email</label>
+        <input type="text"
+            name="login">
+        <br>
+        <br>
+        <label>Password</label>
+        <input type="password"
+            name="password">
 
-<?php if (isset($_GET['timeout'])): ?>
-    <p>Your session has expired due to inactivity. Please log in again.</p>
-<?php endif; ?>
+        <br>
+        <button type="submit">Sign In</button>
 
+    </form>
 </body>
+
 </html>
