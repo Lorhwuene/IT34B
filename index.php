@@ -1,88 +1,79 @@
 <?php
 require_once 'config/config.php';
 
-if(isset($_SESSION['user_id'])){
+if (isset($_SESSION['user_id'])) {
     header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
     exit;
 }
 
-$error='';
+$error = '';
 
-if($_SERVER['REQUEST_METHOD'] === 'POST'){
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $login = trim($_POST['login'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    $error = 'Invalid login credentials';
+    if ($login === '' || $password === '') {
+        $error = 'Invalid login credentials';
 
-    if ($login==='' || $password ===''){
-        
-        // Log incomplete login attempt
-    logActivity(
-        $pdo,
-        null,
-        $login,
-        'login',
-        'failed'
-    );
-
+        logActivity($pdo, null, $login, 'login', 'failed');
     } else {
+        $result = loginUser($pdo, $login, $password);
 
-        $result = loginUser($pdo,$login,$password);
-
-        if($result===true){
-            // Log complete login attempt
+        if ($result === true) {
             logActivity(
-                $pdo,$_SESSION['user_id'],
+                $pdo,
+                $_SESSION['user_id'],
                 $_SESSION['user_email'],
                 'login',
                 'success'
             );
 
-            echo 'Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php';
-        header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
-        exit;
-       } elseif($result=== 'active_session') {
-        echo 'This account is currently logged in on another device';
+            header('Location: ' . BASE_URL . '/app/' . $_SESSION['user_role'] . '/index.php');
+            exit;
 
-        $error = 'This account is currently logged in on another device';
-       } else {
+        } elseif ($result === 'active_session') {
+            $error = 'This Account is already logged in on another device';
 
-       $error = 'Invalid login credentials';
+        } else {
+            $error = 'Invalid login credentials';
         }
     }
 }
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Login</title>
 </head>
-
 <body>
 
+    <h2>Login</h2>
+
+    <?php if (!empty($error)): ?>
+        <p><?php echo htmlspecialchars($error); ?></p>
+    <?php endif; ?>
+
+    <?php if (isset($_GET['timeout'])): ?>
+        <p>Your session has timed out due to inactivity. Please log in again.</p>
+    <?php endif; ?>
 
     <form method="POST">
         <label>Username or Email</label>
-        <input type="text"
-            name="login">
-        <br>
-        <br>
+        <input type="text" name="login" required>
+
+        <br><br>
+
         <label>Password</label>
-        <input type="password"
-            name="password">
+        <input type="password" name="password" required>
 
-        <br>
+        <br><br>
+
         <button type="submit">Sign In</button>
-
     </form>
 
-    <?php if(isset($_GET['timeout'])): ?>
-        <p>Your session has expired due to inactivity. Please log in again </p>
-        <?php endif; ?>
 </body>
-
 </html>
+```

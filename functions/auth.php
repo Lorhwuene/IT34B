@@ -1,6 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../functions/session.php');
 function loginUser($pdo, $login, $password)
 {
     $sql = "
@@ -12,7 +11,7 @@ function loginUser($pdo, $login, $password)
             user_role
         FROM users
         WHERE user_email = :login
-           OR user_username = :login
+            OR user_username = :login
         LIMIT 1
     ";
 
@@ -28,17 +27,22 @@ function loginUser($pdo, $login, $password)
     if (!password_verify($password, $user['user_password'])) {
         return false;
     }
-// check if user has actve session
-if(hasActiveUserSession($pdo,$user['user_id'])) {
-    return 'active_session';
-}
+
+    // Check if user already has an active session
+    if (hasActiveUserSession($pdo, $user['user_id'])) {
+        return 'active_session';
+    }
+
     $_SESSION['user_id'] = $user['user_id'];
     $_SESSION['user_email'] = $user['user_email'];
     $_SESSION['user_username'] = $user['user_username'];
     $_SESSION['user_role'] = $user['user_role'];
-    
 
     $_SESSION['session_id'] = startUserSession($pdo);
+
+    // Initialize last activity
+    $_SESSION['last_activity'] = time();
+
     return true;
 }
 
@@ -46,8 +50,12 @@ function requireLogin()
 {
     if (!isset($_SESSION['user_id'])) {
         header('Location: ' . BASE_URL . '/index.php');
+        exit;
     }
+
+    checkSessionTimeout();
 }
+
 function requireRole($role)
 {
     requireLogin();
@@ -57,8 +65,5 @@ function requireRole($role)
         die('Access denied.');
     }
 }
-
-
-
 
 ?>
