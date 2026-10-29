@@ -1,3 +1,4 @@
+
 <?php
 // Generate CSRF Token
 function generateCsrfToken(){
@@ -33,7 +34,7 @@ if($_SERVER['REQUEST_METHOD'] !== 'POST'){
 $token = $_POST['csrf_token'] ?? '';
 
 if(!verifyCsrfToken($token)){
-    http_response_code(403)
+    http_response_code(403);
 
     die('Invalid CSRF Token');
     }
