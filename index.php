@@ -1,3 +1,4 @@
+
 <?php
 require_once 'config/config.php';
 
@@ -9,6 +10,9 @@ if (isset($_SESSION['user_id'])) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    requireCsrfToken();
+
     $login = trim($_POST['login'] ?? '');
     $password = $_POST['password'] ?? '';
 
@@ -41,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -62,9 +66,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST">
         <label>Username or Email</label>
+
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(generateCsrfToken(), ENT_QUOTES, 'UTF-8') ?>">
+
         <input type="text" name="login" required>
 
-        <br><br>
+        <br>
+        <br>
 
         <label>Password</label>
         <input type="password" name="password" required>
@@ -76,4 +84,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </body>
 </html>
-```
