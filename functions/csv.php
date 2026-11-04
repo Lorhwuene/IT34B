@@ -1,6 +1,6 @@
 <?php
 
-function exportsCsv(string $filename, array $headers, array $rows): void
+function exportCsv(string $filename, array $headers, array $rows): void
 {
     if(ob_get_level()){
         ob_end_clean();
